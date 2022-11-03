@@ -1,0 +1,23 @@
+= form_for @study do |f|
+   table.company
+     tbody
+      tr
+        th.arrow_box 問題
+      tr
+        td colspan="2" = text_field :study, :question
+      tr
+        th.arrow_box 年度
+      tr
+        td = text_field :study, :year
+          /td = f.select(:genre, study.GenreStatus)
+      tr
+        th.arrow_box ジャンル選択
+      tr
+        td = text_field :study, :genre
+        /td = f.select(:genre, study.GenreStatus)
+      tr
+        th.arrow_box  回答
+      tr
+        td = text_area :study, :answer
+      tr
+        td = f.submit '質問を追加する'

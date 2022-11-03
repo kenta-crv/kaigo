@@ -4,17 +4,6 @@ Rails.application.routes.draw do
   get 'question' => 'top#question'
   get 'co' => 'top#co'
 
-  get 'manuals' => 'manuals#index'
-  get 'manuals/format' => 'manuals#format' #アポフォーマット
-  get 'manuals/faq' => 'manuals#faq' #よくある質問
-  get 'manuals/officework' => 'manuals#officework'
-
-  get 'manuals/homework' => 'manuals#homework' #２回目の出勤について
-  get 'manuals/first' => 'manuals#first' #１回目の出勤について
-  get 'manuals/script' => 'manuals#script' #トークスクリプト
-  get 'manuals/tool' => 'manuals#tool' #各種ツール紹介
-  get 'manuals/document' => 'manuals#document' #各種ツール紹介
-
   #管理者アカウント
   devise_for :admins, controllers: {
     registrations: 'admins/registrations'
@@ -25,44 +14,6 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
   resources :users, only: [:show]
-  #クライアントアカウント
-  devise_for :clients, controllers: {
-    registrations: 'clients/registrations'
-  }
-  resource :client, only: [:show]
-  resource :sender, only: [:show]
-
-  post 'senders/import' => 'senders#import'
-  #センダーアカウント
-  devise_for :senders, controllers: {
-    registrations: 'senders/registrations'
-  }
-  resource :myself, only: :show, controller: :sender do
-    resources :inquiries, only: [:index]
-  end
-  resources :senders, only: [:index, :show, :edit, :update] do
-    resources :inquiries, except: [:index, :show] do
-      put :default, to: 'inquiries#default'
-    end
-    get 'history', to: 'senders_history#index'
-    get 'sended', to: 'senders_history#sended'
-    get 'mail_app', to: 'senders_history#mail_app'
-    get 'tele_app', to: 'senders_history#tele_app'
-    get 'download_sended', to: 'senders_history#download_sended'
-    get 'download_callbacked', to: 'senders_history#download_callbacked'
-    get 'callbacked', to: 'senders_history#callbacked'
-    get 'users_callbacked', to: 'senders_history#users_callbacked'
-    post 'okurite/autosettings', to: 'okurite#autosettings'
-    # okurite
-    resources :okurite, only: [:index, :show] do
-      get :preview, to: 'okurite#preview'
-      post :contact, to: 'okurite#create'
-
-    end
-  end
-  get 'sender/question' => 'sender#question'
-  get 'callback' => 'okurite#callback', as: :callback
-  get 'direct_mail_callback' => 'okurite#direct_mail_callback', as: :direct_mail_callback
   #ワーカーアカウント
   devise_for :workers, controllers: {
     registrations: 'workers/registrations',
@@ -72,16 +23,9 @@ Rails.application.routes.draw do
   }
   resources :workers, only: [:show]
 
-  resources :matters #リスト案件情報
-  resources :sendlist
-  resources :estimates, only: [:index, :show] do
-    member do
-      get :report
-    end
-  end
 
-  resources :customers do
-    resources :calls
+  resources :studies do
+    resources :answers
     resources :counts
     member do
       get :contact
@@ -92,32 +36,32 @@ Rails.application.routes.draw do
       post :thanks
       post :import
       post :update_import
-      post :call_import
+      post :answer_import
       post :tcare_import
       get :message
       get :bulk_destroy
     end
   end
 
-  get 'list' => 'customers#list'
-  get 'customers/:id/:is_auto_call' => 'customers#show'
-  get 'direct_mail_send/:id' => 'customers#direct_mail_send' #SFA
+  get 'list' => 'studies#list'
+  get 'studies/:id/:is_auto_answer' => 'studies#show'
+  get 'direct_mail_send/:id' => 'studies#direct_mail_send' #SFA
   #get 'sender/:id/' => 'sender#show'
   scope :information do
-    get '' => 'customers#information', as: :information #分析
+    get '' => 'studies#information', as: :information #分析
 
     resource :incentive, only: [:show, :update], path: '/incentives/:year/:month'
   end
 
-  get 'news' => 'customers#news' #インポート情報
-  get 'call_history'=> 'customers#call_history' #インポート情報
-  get 'export' => 'customers#export' #
-  get 'sfa' => 'customers#sfa' #SFA
+  get 'news' => 'studies#news' #インポート情報
+  get 'answer_history'=> 'studies#answer_history' #インポート情報
+  get 'export' => 'studies#export' #
+  get 'sfa' => 'studies#sfa' #SFA
 
-  #post 'customers/contact' => 'customers#contact' #メール送信
-  #post 'customers/thanks' => 'ustomers#thanks' #メール送信完了
-  get 'extraction' => 'customers#extraction' #TCARE
-  delete :customers, to: 'customers#destroy_all' #Mailer
+  #post 'studies/contact' => 'studies#contact' #メール送信
+  #post 'studies/thanks' => 'ustomers#thanks' #メール送信完了
+  get 'extraction' => 'studies#extraction' #TCARE
+  delete :studies, to: 'studies#destroy_all' #Mailer
 
   #お問い合わせフォーム
   get 'contact' => 'contact#index'

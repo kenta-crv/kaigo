@@ -1,10 +1,10 @@
 class WorkersController < ApplicationController
   def show
     @worker = Worker.find(params[:id])
-    @customers = Customer&.where(worker_id: current_worker.id)
-    @count_day = @customers.where('updated_at > ?', Time.current.beginning_of_day).where('updated_at < ?',Time.current.end_of_day).count
-    @count_week = @customers.where('updated_at > ?', Time.current.beginning_of_week).where('updated_at < ?',Time.current.end_of_week).count
-    @count_month = @customers.where('updated_at > ?', Time.current.beginning_of_month).where('updated_at < ?',Time.current.end_of_month).count
+    @studies = study&.where(worker_id: current_worker.id)
+    @count_day = @studies.where('updated_at > ?', Time.current.beginning_of_day).where('updated_at < ?',Time.current.end_of_day).count
+    @count_week = @studies.where('updated_at > ?', Time.current.beginning_of_week).where('updated_at < ?',Time.current.end_of_week).count
+    @count_month = @studies.where('updated_at > ?', Time.current.beginning_of_month).where('updated_at < ?',Time.current.end_of_month).count
 
     @contact_trackings_month = @worker.contact_trackings.where(created_at: Time.current.beginning_of_month..Time.current.end_of_month)
     @contact_trackings_before_month = @worker.contact_trackings.where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month)

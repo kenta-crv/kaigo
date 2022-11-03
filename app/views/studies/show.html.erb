@@ -1,0 +1,42 @@
+<%- set_meta_tags noindex: true%>
+<br>
+<br>
+<br>
+<br>
+<table class="header-table space">
+  <tr>
+    <th rowspan="2">
+      <% if @prev_study&.id %>
+        <%= link_to "前へ", study_path(id: @prev_study.id, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!), class:"prev btn btn-success" %>
+      <% end %>
+    <th rowspan="2">
+      <% if @next_study&.id %>
+        <%= link_to "次へ", study_path(id: @next_study.id, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!), class:"prev btn btn-success" %>
+      <% end %>
+    </th>
+  </tr>
+</table>
+
+<table width="100%" class="space">
+	<tbody>
+		<tr>
+			<th colspan="4">顧客情報（<%= link_to("編集", edit_study_path,  target:"_blank") %>）</th>
+		</tr>
+		<tr>
+			<th>質問</th>
+			<td><%= @study.question %></td>
+    </tr>
+		<tr>
+			<th>ジャンル</th>
+			<td><%= @study.genre %></td>
+		</tr>
+    <tr>
+			<th>カテゴリー</th>
+			<td><%= @study.kategory %></td>
+		</tr>
+    <tr>
+			<th>答え</th>
+			<td><%= @study.answer %></td>
+		</tr>
+	</tbody>
+</table>

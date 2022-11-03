@@ -1,0 +1,19 @@
+- set_meta_tags noindex: true
+h2.heading
+    | 新規登録
+= render 'form', study: @study
+br
+br
+= form_tag import_studies_path, multipart: true do
+  table[width="90%"]
+    tbody
+      tr
+        th[colspan="3"]
+          | CSVファイルインポート
+      tr
+        td
+          = file_field_tag :file
+        th
+          = submit_tag "インポート",  class: 'btn btn-success'
+        th
+          = link_to 'エクスポート', studies_path(format: :csv), class: 'btn btn-success'

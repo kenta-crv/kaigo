@@ -1,2 +1,0 @@
-class SmartphoneLog < ApplicationRecord
-end

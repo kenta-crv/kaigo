@@ -1,0 +1,201 @@
+- set_meta_tags noindex: true
+.tops-wrapper
+ h2.headline
+    | コールリスト
+    | (
+    = @studies.current_page * 100 - 99
+    | ~
+    = [@studies.page(1).per(100).total_count, @studies.current_page * 100].min
+    | 件/
+    = @studies.page(1).per(100).total_count
+    | 件中
+    | )
+
+= form_tag({ controller: :studies, action: :destroy_all}, method: 'delete') do
+ .scroll
+  = submit_tag '一括削除', style: 'width: 80px;margin: 0 0 10px 5%;font-size: 11px;'
+  table[width="90%" cellpadding="0" cellspacing="0"]
+    col[width="5%"]
+    col[width="85%"]
+    col[width="10%"]
+    thead
+      tr
+        th
+          input.checkable_delete_all[type="checkbox"]
+        th
+          | 問題
+        th
+          | 編集/削除
+    - @studies.each do |study|
+      tr
+        td
+        td
+          = link_to study.id, study_path(study, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!)
+        td
+          = link_to '編集', edit_study_path(study, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!), class: 'command'
+          = link_to '削除',
+          -                        study_path(study, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!),method: :delete,class: 'command',data: { confirm: '本当に削除しますか？'}
+    tr
+      th[colspan="10"]
+        = paginate @studies
+
+
+/#createTicket.modal.fade[tabindex="-1" role="dialog" aria-labelledby="dialogHeader" aria-hidden="true"]
+  .modal-dialog
+    .modal-content[style="width:900px; margin-left: -200px;"]
+      .modal-header
+        button.close[type="button" data-dismiss="modal" aria-hidden="true"]
+          | ×
+      .modal-body
+        = search_form_for @q do |f|
+          table.space[width="90%"]
+            col[width="20%"]
+            col[width="30%"]
+            col[width="20%"]
+            col[width="30%"]
+            tbody
+              tr
+                th[colspan="4"]
+                  | 検索
+              tr
+                th
+                  |
+                td
+                  = f.search_field :company_cont, type: "text"
+                th
+                  | 担当者名
+                td
+                  = f.search_field :answers_user_user_name_cont, type: "text"
+              tr
+                th
+                  | 電話番号
+                td
+                  = f.search_field :tel_cont, type: "text"
+                th
+                  | 検索条件
+                td
+                  = f.search_field :industry_cont, type: "text"
+              tr
+                th
+                  | 架電回数
+                td
+                  = number_field :search ,:ltec_answers_count
+                th
+                  | 住所
+                td
+                  =  f.collection_select :address_cont_any, JpPrefecture::Prefecture.all, :name, :name, {include_blank: '選択してください'},
+                  {class: 'form-control', id: 'search_prefecture', multiple: true}
+              tr
+                th
+                  | 携帯番号
+                td
+                  = f.search_field :mobile_cont, type: "text"
+                th
+                  | SFA
+                td
+                  = f.search_field :choice_cont, type: "text"
+              tr
+                th
+                  | 未コール
+                td
+                  = f.search_field :answers_id_null, type: 'checkbox', value: 'true'
+                th
+                  | 最終コール状態
+                td
+                  = select_tag "last_answer[statu]",options_for_select( [""] + answer.StatuItems, @last_answer_params[:statu]), multiple: true, class: "form-control"
+              tr
+                th
+                  | 見込コール日時（最初）
+                td
+                  #time_from_datetimepicker.input-group.date
+                    = date_field_tag "last_answer[time_from]", @last_answer_params[:time_from], class: "form-control"
+                    span.input-group-addon
+                      span.glyphicon.glyphicon-calendar
+                th
+                  | 見込コール日時（最後）
+                td
+                  #time_to_datetimepicker.input-group.date
+                    = date_field_tag "last_answer[time_to]", @last_answer_params[:time_to], class: "form-control"
+                    span.input-group-addon
+                      span.glyphicon.glyphicon-calendar
+                  - # text_field_tag "last_detail[created_at_from]", @last_detail_params[:created_at_from], class: "datetimepicker"
+                  - # text_field_tag "last_detail[created_at_to]", @last_detail_params[:created_at_to], class: "datetimepicker"
+              tr
+                th
+                  | 最終コール日時（最初）
+                td
+                  #created_at_from_datetimepicker.input-group.date
+                    = date_field_tag "last_answer[created_at_from]", @last_answer_params[:created_at_from], class: "form-control"
+                    span.input-group-addon
+                      span.glyphicon.glyphicon-calendar
+                th
+                  | 最終コール日時（最後）
+                td
+                  #created_at_to_datetimepicker.input-group.date
+                    = date_field_tag "last_answer[created_at_to]", @last_answer_params[:created_at_to], class: "form-control"
+                    span.input-group-addon
+                      span.glyphicon.glyphicon-calendar
+              tr
+                th
+                  | 最終インポート日時（最初）
+                td
+                  = f.date_field :created_at_gteq, class: 'date-picker form-control'
+                th
+                  | 最終インポート日時（最後）
+                td
+                  = f.date_field :created_at_lteq, class: 'date-picker form-control'
+              tr
+                th
+                  | 最終アップデート日時（最初）
+                td
+                  = f.date_field :updated_at_gteq, class: 'date-picker form-control'
+                th
+                  | 最終アップデート日時（最後）
+                td
+                  = f.date_field :updated_at_lteq, class: 'date-picker form-control'
+              tr
+                th[colspan="4"]
+                  = f.submit '検索'
+        br
+.heading
+  h2
+    | インポート
+= form_tag import_studies_path, multipart: true do
+  table.space[width="90%"]
+    tbody
+      tr
+        th[colspan="3"]
+          | study_CSVファイルインポート
+      tr
+        td
+          = file_field_tag :file
+        th
+          = submit_tag "インポート",  class: 'btn btn-light'
+        th
+          = link_to 'エクスポート', studies_path(format: :csv, q: params[:q]&.permit!, last_answer: params[:last_answer]&.permit!, page: params[:page]), class: 'btn btn-light'
+
+javascript:
+  $(function() {
+    var allChecableBox = $('.checkable_delete_all');
+    var deleteCheckBoxs = $("[id^='deletes_']");
+
+    allChecableBox.change(function() {
+      if (this.checked) {
+        deleteCheckBoxs.prop('checked', true);
+      } else {
+        deleteCheckBoxs.prop('checked', false);
+      }
+    });
+
+    deleteCheckBoxs.change(function() {
+      var unCheckedExist = $("input:not(:checked)[id^='deletes_']").length > 0;
+      var checkedExist = $("input:checked[id^='deletes_']").length > 0;
+
+      if (checkedExist && unCheckedExist) {
+        allChecableBox.prop('indeterminate', true);
+      } else {
+        allChecableBox.prop('indeterminate', false);
+        allChecableBox.prop('checked', checkedExist);
+      }
+    });
+  });
